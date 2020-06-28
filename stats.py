@@ -9,7 +9,7 @@ from scipy.interpolate import make_interp_spline, BSpline
 # flag whether files should be saved to disk in order to avoid making requests every time, you probably won't need this unless you intend to change the code
 SAVE_FILES = False
 # insert the name of your kicktipp lobby here
-LOBBY_NAME = "your_lobby_name"
+LOBBY_NAME = "asbuli2019"
 
 
 LOCAL_URL = "files/game_day"
@@ -64,8 +64,8 @@ def get_players_list():
         first_file = open(url)
         first_soup = BeautifulSoup(first_file.read(), "html.parser")
     else:
-        first_file = requests.get(url).text
-        first_soup = BeautifulSoup(first_file, "html.parser")
+        first_file = requests.get(url)
+        first_soup = BeautifulSoup(first_file.text, "html.parser")
     first_table = first_soup.find("table", class_ = "tippuebersicht")
 
     for row in first_table.tbody.findAll('tr'):
@@ -267,7 +267,7 @@ for game_day in game_days:
 
 
 # matplot functions to save the plot
-def save_bar_plot(amplitude, subfolder, title, results, y_ticks, x_name = "result", y_name = "amount of occurences"):
+def save_bar_plot(amplitude, subfolder, title, results, y_ticks, x_name = "result", y_name = "amount of occurences", y_min = None, y_max = None):
     fig, ax = plt.subplots()
     x_pos = [i for i, _ in enumerate(results)]
     ax.bar(x_pos, amplitude, color=(0.2, 0.8, 0.0, 0.8))
@@ -276,6 +276,9 @@ def save_bar_plot(amplitude, subfolder, title, results, y_ticks, x_name = "resul
     ax.set_title(title)
     plt.xticks(x_pos, results, rotation = 90)
     plt.yticks(y_ticks)
+    if y_min != None:
+        axes = plt.gca()
+        axes.set_ylim([y_min,y_max])
     fig.set_size_inches(12.8, 9.6)
     fig.savefig("plots/" + subfolder + "/" + title + ".png", bbox_inches="tight")
     plt.close()
@@ -317,7 +320,7 @@ save_bar_plot(all_ampl, "scores_per_team", "all_teams", all_res, range(min(all_a
 
 close_calls_dict = sort_dict(close_calls_dict)
 close_call_res, close_call_amp = dict_to_array(close_calls_dict)
-save_bar_plot(close_call_amp, "other", "close_calls", close_call_res, range(0, max(close_call_amp) + 1), "player", "amount of games")
+save_bar_plot(close_call_amp, "other", "close_calls", close_call_res, range(0, max(close_call_amp) + 1), "player", "amount of games", min(close_call_amp) - 5, max(close_call_amp))
 
 missed_games_dict = sort_dict(missed_games_dict)
 missed_games_res, missed_games_amp = dict_to_array(missed_games_dict)
