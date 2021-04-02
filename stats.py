@@ -7,9 +7,9 @@ import pathlib
 from scipy.interpolate import make_interp_spline, BSpline
 
 # flag whether files should be saved to disk in order to avoid making requests every time, you probably won't need this unless you intend to change the code
-SAVE_FILES = False
+SAVE_FILES = True
 # insert the name of your kicktipp lobby here
-LOBBY_NAME = "some_lobby_name"
+LOBBY_NAME = "asbuli2020"
 
 
 LOCAL_URL = "files/game_day"
@@ -80,7 +80,7 @@ def parse_html():
     game_days = []
 
     #range is number of match days, so 35 (since range is not closed) in total
-    for game_day in range(1, 35):
+    for game_day in range(1, 27):
         url = URL + str(game_day)
         if SAVE_FILES:
             url = url + ".html"
@@ -97,21 +97,13 @@ def parse_html():
         home_goals = []
         guest_goals = []
 
-        for row in table.thead.findAll('tr')[0]:
-            if (row.string != " "):
-                home_teams.append(row.string)
-
-        for row in table.thead.findAll('tr')[1]:
-            if (row.string != " "):
-                guest_teams.append(row.string)
-
-        for row in table.thead.select( "tr[class='headerErgebnis']"):
-            for th in row.findAll("th", class_="ereignis"):
-                result = th.find("span")
-                this_home_goals = result.find("span", class_="kicktipp-heim")
-                this_guest_goals = result.find("span", class_="kicktipp-gast")
-                home_goals.append(int(this_home_goals.string))
-                guest_goals.append(int(this_guest_goals.string))
+        for row in table.thead.findAll('tr')[0].findAll("th", class_="ereignis"):
+            header_res = row.findAll("div", class_="headerbox")
+            home_teams.append(header_res[0].string)
+            guest_teams.append(header_res[1].string)
+            result = header_res[2].find("span")
+            home_goals.append(int(result.find("span", class_="kicktipp-heim").string))
+            guest_goals.append(int(result.find("span", class_="kicktipp-gast").string))
 
         matches = []
         for game_index in range(9):
