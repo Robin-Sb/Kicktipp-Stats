@@ -9,7 +9,7 @@ from scipy.interpolate import make_interp_spline, BSpline
 # flag whether files should be saved to disk in order to avoid making requests every time, you probably won't need this unless you intend to change the code
 SAVE_FILES = True
 # insert the name of your kicktipp lobby here
-LOBBY_NAME = "asbuli2020"
+LOBBY_NAME = "some_lobby_name"
 
 
 LOCAL_URL = "files/game_day"
