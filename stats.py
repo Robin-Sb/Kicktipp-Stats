@@ -80,7 +80,7 @@ def parse_html():
     game_days = []
 
     #range is number of match days, so 35 (since range is not closed) in total
-    for game_day in range(1, 27):
+    for game_day in range(1, 35):
         url = URL + str(game_day)
         if SAVE_FILES:
             url = url + ".html"
