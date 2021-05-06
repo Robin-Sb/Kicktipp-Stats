@@ -41,7 +41,6 @@ def get_players_list():
       players.append(column.string)
   return players
 
-
 # hacky function to parse through the kicktipps html page since they have no api
 def parse_html(players):
     game_days = []

@@ -12,8 +12,3 @@ if SAVE_FILES:
     URL = LOCAL_URL
 else:
     URL = BASE_URL
-
-class Plot_Type(Enum):
-    bar = 1
-    pie = 2
-    line = 3
