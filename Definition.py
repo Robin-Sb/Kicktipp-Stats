@@ -1,3 +1,4 @@
+from enum import Enum
 # flag whether files should be saved to disk in order to avoid making requests every time, you probably won't need this unless you intend to change the code
 SAVE_FILES = False
 # insert the name of your kicktipp lobby here
@@ -11,3 +12,8 @@ if SAVE_FILES:
     URL = LOCAL_URL
 else:
     URL = BASE_URL
+
+class Plot_Type(Enum):
+    bar = 1
+    pie = 2
+    line = 3

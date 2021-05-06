@@ -4,6 +4,8 @@ import pathlib
 from Importer import import_match_data, prepare_html_files
 from scipy.interpolate import make_interp_spline, BSpline
 from DataProcessing import process_data
+from Definition import Plot_Type
+from DataPlotter import plot
 
 cwd = pathlib.Path.cwd()
 # make local directories where the plots are saved 
@@ -61,9 +63,9 @@ for team in team_results:
     y_ticks = range(min(amplitude), max(amplitude) + 1)
     save_bar_plot(amplitude, "scores_per_team", team, results, y_ticks)
 
+# plot(all_results_merged, Plot_Type.bar, {"subfolder": "scores_per_team", "title": "all_teams"}, False)
 all_results_merged = sort_dict(all_results_merged)
 all_res, all_ampl = dict_to_array(all_results_merged)
-
 save_bar_plot(all_ampl, "scores_per_team", "all_teams", all_res, range(min(all_ampl), max(all_ampl) + 1))
 
 close_calls_dict = sort_dict(close_calls)
