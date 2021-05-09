@@ -1,22 +1,39 @@
-def process_data(game_days, players):
-  team_results = {}
-  all_results_merged = {}
-  points_per_team = {}
-  close_calls = {}
-  missed_games = {}
+from Definition import Dicts
 
-  for game_day in game_days:
-    for match in game_day:
-        fill_team_results_dict(match, team_results)
-        fill_all_results_dict(match, all_results_merged)
-        
-        index = 0
-        for prediction in match.predictions:
-            fill_points_per_team_dict(match, index, points_per_team)
-            fill_close_calls_dict(match, index, close_calls, players)
-            fill_missed_games_dict(match, index, missed_games, players)
-            index = index + 1
-  return team_results, all_results_merged, points_per_team, close_calls, missed_games
+def process_data(game_days, players):
+    dict_of_dicts = {}
+    team_results = {}
+    all_results_merged = {}
+    points_per_team = {}
+    close_calls = {}
+    missed_games = {}
+    points_per_predicted_result = {}
+    amount_of_predictions = {}
+    points_per_predicted_result_agglomerated = {}
+    amount_of_predictions_agglomerated = {}
+
+
+    for game_day in game_days:
+        for match in game_day:
+            fill_team_results_dict(match, team_results)
+            fill_all_results_dict(match, all_results_merged)
+            #fill_all_points_per_predicted_result(match, points_per_predicted_result_agglomerated, amount_of_predictions_agglomerated)
+            for index in range(len(match.predictions)):
+                fill_points_per_team_dict(match, index, points_per_team)
+                fill_close_calls_dict(match, index, close_calls, players)
+                fill_missed_games_dict(match, index, missed_games, players)
+                fill_points_per_predicted_result(match, index, points_per_predicted_result, amount_of_predictions, points_per_predicted_result_agglomerated, amount_of_predictions_agglomerated)
+    
+    dict_of_dicts[Dicts.TEAM_RESULTS] = team_results
+    dict_of_dicts[Dicts.ALL_RESULTS_AGGLOMERATED] = all_results_merged
+    dict_of_dicts[Dicts.POINTS_PER_TEAM] = points_per_team
+    dict_of_dicts[Dicts.CLOSE_CALLS] = close_calls
+    dict_of_dicts[Dicts.POINTS_PER_PREDICTED_RESULT] = points_per_predicted_result
+    dict_of_dicts[Dicts.AMOUNT_OF_PREDICTIONS] = amount_of_predictions
+    dict_of_dicts[Dicts.MISSED_GAMES] = missed_games
+    dict_of_dicts[Dicts.AMOUNT_OF_PREDICTIONS_AGGLOMERATED] = amount_of_predictions_agglomerated
+    dict_of_dicts[Dicts.POINTS_PER_PREDICTED_RESULT_AGGLOMERATED] = points_per_predicted_result_agglomerated
+    return dict_of_dicts
 
 def fill_team_results_dict(match, team_results):
     if match.home_team in team_results:
@@ -68,8 +85,8 @@ def award_points_per_game(goals_home, goals_guest, prediction):
 def fill_points_per_team_dict(match, index, points_per_team_dict):
     score = award_points_per_game(match.goals_home, match.goals_guest, match.predictions[index])
     if index not in points_per_team_dict:
-        points_per_team_dict[index] = {}
-    
+        points_per_team_dict[index] = {}        
+
     if match.home_team in points_per_team_dict[index]:
         old_score = points_per_team_dict[index][match.home_team]
     else:
@@ -81,6 +98,54 @@ def fill_points_per_team_dict(match, index, points_per_team_dict):
     else:
         old_score = 0
     points_per_team_dict[index][match.guest_team] = old_score + score
+
+def fill_points_per_predicted_result(match, index, points_per_predicted_result, amount_of_predictions, points_per_predicted_result_agglomerated, amount_of_predictions_agglomerated):
+    prediction = match.predictions[index]
+    if prediction.goals_home == None or prediction.goals_guest == None:
+        return
+
+    if index not in amount_of_predictions:
+        amount_of_predictions[index] = {}
+
+    score = award_points_per_game(match.goals_home, match.goals_guest, match.predictions[index])
+    if index not in points_per_predicted_result:
+        points_per_predicted_result[index] = {}
+
+    if prediction.goals_home > prediction.goals_guest:
+        prediction_as_string = str(prediction.goals_home) + ":" + str(prediction.goals_guest)
+    else:
+        prediction_as_string = str(prediction.goals_guest) + ":" + str(prediction.goals_home)
+
+    # fill amount per predicted results agglomerated
+    if prediction_as_string not in amount_of_predictions_agglomerated:
+        old_amount_all = 0
+    else:
+        old_amount_all = amount_of_predictions_agglomerated[prediction_as_string]
+    amount_of_predictions_agglomerated[prediction_as_string] = old_amount_all + 1
+
+    # fill points per predicted results agglomerated
+    if prediction_as_string not in points_per_predicted_result_agglomerated:
+        old_score_all = 0
+    else:
+        old_score_all = points_per_predicted_result_agglomerated[prediction_as_string]
+    points_per_predicted_result_agglomerated[prediction_as_string] = old_score_all + score
+
+    # fill amount of predictions
+    if prediction_as_string not in amount_of_predictions[index]:
+        amount_of_predictions[index][prediction_as_string] = {}
+        old_amount = 0
+    else:
+        old_amount = amount_of_predictions[index][prediction_as_string]
+    amount_of_predictions[index][prediction_as_string] = old_amount + 1
+
+
+    # fill point per predicted resul 
+    if prediction_as_string not in points_per_predicted_result[index]:
+        points_per_predicted_result[index][prediction_as_string] = {}
+        old_score = 0
+    else:
+        old_score = points_per_predicted_result[index][prediction_as_string]
+    points_per_predicted_result[index][prediction_as_string] = old_score + score
 
 def assign_close_calls(goals_home, goals_guest, prediction):
     real_score = award_points_per_game(goals_home, goals_guest, prediction)

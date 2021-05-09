@@ -2,15 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import make_interp_spline, BSpline
 
-def save_bar_plot(resolution, y, subfolder, title, y_ticks, x_name = "result", y_name = "amount of occurences", y_min = None, y_max = None):
+def save_bar_plot(resolution, y, subfolder, title, y_ticks = None, x_name = "result", y_name = "amount of occurences", y_min = None, y_max = None):
     fig, ax = plt.subplots()
     x = [i for i, _ in enumerate(resolution)]
-    ax.bar(x, y, color=(0.2, 0.8, 0.0, 0.8))
+    ax.bar(x, y)
     plt.xlabel(x_name)
     plt.ylabel(y_name)
     ax.set_title(title)
     plt.xticks(x, resolution, rotation = 90)
-    plt.yticks(y_ticks)
+    if y_ticks:
+      plt.yticks(y_ticks)
     if y_min != None:
         axes = plt.gca()
         axes.set_ylim([y_min,y_max])
@@ -59,8 +60,8 @@ def sort_dict(inp_dict):
 def map_data(input):
   return dict_to_array(sort_dict(input))
 
-def get_y_ticks(amplitude, y_zero = False, min_offset = 0, max_offset = 0):
+def get_y_ticks(amplitude, y_zero = False, min_offset = 0, max_offset = 0, step_size = 1):
   y_min = 0
   if not y_zero:
     y_min = min(amplitude)
-  return range(y_min + min_offset, max(amplitude) + max_offset)
+  return range(y_min + min_offset, max(amplitude) + max_offset, step_size)
