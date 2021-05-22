@@ -3,7 +3,7 @@ import requests
 import re
 from Prediction import Prediction
 from Match import Match
-from Definition import URL, SAVE_FILES, BASE_URL, LOCAL_URL
+from Definition import URL, SAVE_FILES, BASE_URL, LOCAL_URL, TOTAL_MATCHES
 
 def import_match_data():
   players = get_players_list()
@@ -18,7 +18,7 @@ def prepare_html_files():
         download_html_files()
 
 def download_html_files():
-    for i in range(1, 35): 
+    for i in range(1, TOTAL_MATCHES): 
         req = requests.get(BASE_URL + str(i))
         file = open(LOCAL_URL + str(i) + ".html", "w")
         file.write(req.text)
@@ -47,7 +47,7 @@ def parse_html(players):
     placements_dict = {}
 
     #range is number of match days, so 35 (since range is not closed) in total
-    for game_day in range(1, 35):
+    for game_day in range(1, TOTAL_MATCHES):
         url = URL + str(game_day)
         if SAVE_FILES:
             url = url + ".html"
